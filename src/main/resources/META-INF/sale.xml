@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings
+        xmlns="http://java.sun.com/xml/ns/persistence/orm"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_3_0.xsd"
+        version="1.0">
+
+    <named-query name="Sale.generateReport">
+        <query>
+            SELECT s FROM Sale s JOIN FETCH s.seller
+            WHERE s.date BETWEEN :minDate AND :maxDate
+            AND UPPER(s.seller.name) LIKE UPPER(CONCAT('%', :name, '%'))
+        </query>
+    </named-query>
+
+    <named-query name="Sale.generateReportCount">
+        <query>
+            SELECT COUNT(s) FROM Sale s JOIN s.seller
+            WHERE s.date BETWEEN :minDate AND :maxDate
+            AND UPPER(s.seller.name) LIKE UPPER(CONCAT('%', :name, '%'))
+        </query>
+    </named-query>
+
+    <named-query name="Sale.generateSummary">
+        <query>
+            SELECT new com.devsuperior.dsmeta.dto.SaleSummaryDTO(s.seller.name, SUM(s.amount))
+            FROM Sale s
+            WHERE s.date BETWEEN :minDate AND :maxDate
+            GROUP BY s.seller.name
+        </query>
+    </named-query>
+
+</entity-mappings>
